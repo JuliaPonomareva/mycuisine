@@ -16,7 +16,7 @@ namespace MyCuisine.Web.Models
             public float Quantity { get; set; }
             public bool IsMain { get; set; }
             public int OrderNumber { get; set; }
-            public string Ingridient { get; set; }
+            public string Ingredient { get; set; }
             public string QuantityType { get; set; }
         }
 
@@ -35,7 +35,7 @@ namespace MyCuisine.Web.Models
                     {
                         IsIdentifier = true
                     },
-                    new TableColumn(nameof(RecipeItemViewModel.Ingridient), "Ингридиент"),
+                    new TableColumn(nameof(RecipeItemViewModel.Ingredient), "Ингредиент"),
                     new TableColumn(nameof(RecipeItemViewModel.QuantityType), "Единицы измерения"),
                     new TableColumn(nameof(RecipeItemViewModel.Quantity), "Количество"),
                     new TableColumn(nameof(RecipeItemViewModel.OrderNumber), "Порядковый номер"),
@@ -56,7 +56,7 @@ namespace MyCuisine.Web.Models
     public class RecipeItemCreateViewModel
     {
         public int RecipeId { get; set; }
-        public List<SelectListItem> Ingridients { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> Ingredients { get; set; } = new List<SelectListItem>();
         public List<SelectListItem> QuantityTypes { get; set; } = new List<SelectListItem>();
         public FormModel Form { get; set; }
         public class FormModel
@@ -66,7 +66,7 @@ namespace MyCuisine.Web.Models
             public int OrderNumber { get; set; }
 
             [Required(ErrorMessage = "Обязательное поле.")]
-            public int IngridientId { get; set; }
+            public int IngredientId { get; set; }
 
             [Required(ErrorMessage = "Обязательное поле.")]
             public int QuantityTypeId { get; set; }
@@ -76,7 +76,7 @@ namespace MyCuisine.Web.Models
     public class RecipeItemUpdateViewModel
     {
         public int RecipeId { get; set; }
-        public List<SelectListItem> Ingridients { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> Ingredients { get; set; } = new List<SelectListItem>();
         public List<SelectListItem> QuantityTypes { get; set; } = new List<SelectListItem>();
         public FormModel Form { get; set; }
         public class FormModel : RecipeItemCreateViewModel.FormModel

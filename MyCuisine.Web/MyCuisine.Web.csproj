@@ -19,7 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\img\ingridients\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\img\ingredients\" />
     <Folder Include="wwwroot\img\steps\" />
     <Folder Include="wwwroot\img\recipes\" />
   </ItemGroup>

@@ -2,7 +2,7 @@
 
 namespace MyCuisine.Data.Web.Models
 {
-    public class Ingridient
+    public class Ingredient
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -13,18 +13,18 @@ namespace MyCuisine.Data.Web.Models
 
         public List<RecipeItem> RecipeItems { get; set; } = new List<RecipeItem>();
     }
-    public static class IngridientExtension
+    public static class IngredientExtension
     {
         public static void DescribeTable(ModelBuilder builder)
         {
-            builder.Entity<Ingridient>().Property(x => x.Name).HasMaxLength(100).IsRequired(true);
+            builder.Entity<Ingredient>().Property(x => x.Name).HasMaxLength(100).IsRequired(true);
 
-            builder.Entity<Ingridient>()
+            builder.Entity<Ingredient>()
                 .HasIndex(entry => entry.Name)
                 .IsUnique(true)
-                .HasDatabaseName("IX_Ingridients_Name");
+                .HasDatabaseName("IX_Ingredients_Name");
 
-            builder.Entity<Ingridient>().ToTable("Ingridients");
+            builder.Entity<Ingredient>().ToTable("Ingredients");
         }
     }
 }

@@ -5,30 +5,30 @@ using static MyCuisine.Web.Models.TableViewModel;
 
 namespace MyCuisine.Web.Models
 {
-    public class IngridientsViewModel
+    public class IngredientsViewModel
     {
-        public List<Ingridient> Entries { get; set; } = new List<Ingridient>();
+        public List<Ingredient> Entries { get; set; } = new List<Ingredient>();
 
         public TableViewModel GetTableViewModel(ViewDataDictionary ViewData)
         {
             return new TableViewModel
             {
                 Name = (string)ViewData["Title"],
-                CreateUrl = () => "/Admin/IngridientCreate",
-                UpdateUrl = (id) => $"/Admin/Ingridients/{id}",
-                Items = Entries ?? new List<Ingridient>(),
+                CreateUrl = () => "/Admin/IngredientCreate",
+                UpdateUrl = (id) => $"/Admin/Ingredients/{id}",
+                Items = Entries ?? new List<Ingredient>(),
                 Columns = new List<TableColumn>
                 {
-                    new TableColumn(nameof(Ingridient.Id))
+                    new TableColumn(nameof(Ingredient.Id))
                     {
                         IsIdentifier = true
                     },
-                    new TableColumn(nameof(Ingridient.Name), "Название"),
-                    new TableColumn(nameof(Ingridient.Image), "Картинка")
+                    new TableColumn(nameof(Ingredient.Name), "Название"),
+                    new TableColumn(nameof(Ingredient.Image), "Картинка")
                     {
                         IsImage = true
                     },
-                    new TableColumn(nameof(Ingridient.IsActive), "Статус"),
+                    new TableColumn(nameof(Ingredient.IsActive), "Статус"),
                     new TableColumn
                     {
                         IsEdit = true
@@ -38,7 +38,7 @@ namespace MyCuisine.Web.Models
         }
     }
 
-    public class IngridientCreateViewModel
+    public class IngredientCreateViewModel
     {
         public FormModel Form { get; set; }
         public class FormModel
@@ -51,11 +51,11 @@ namespace MyCuisine.Web.Models
         }
     }
 
-    public class IngridientUpdateViewModel
+    public class IngredientUpdateViewModel
     {
         public string Image { get; set; }
         public FormModel Form { get; set; }
-        public class FormModel: IngridientCreateViewModel.FormModel
+        public class FormModel: IngredientCreateViewModel.FormModel
         {
             public bool RemoveImage { get; set; }
         }

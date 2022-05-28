@@ -1,9 +1,9 @@
-﻿@model ViewModel<RecipeDetailIngridientsViewModel>
+﻿@model ViewModel<RecipeDetailIngredientsViewModel>
 @{
     var recipeName = string.Concat(Model.Data.Name[0].ToString().ToUpper(), Model.Data.Name.AsSpan(1));
     ViewData["Title"] = recipeName;
-    var main = Model.Data.Ingridients.Where(s => s.IsMain).OrderBy(s => s.OrderNumber).ToList();
-    var additional = Model.Data.Ingridients.Where(s => !s.IsMain).OrderBy(s => s.OrderNumber).ToList();
+    var main = Model.Data.Ingredients.Where(s => s.IsMain).OrderBy(s => s.OrderNumber).ToList();
+    var additional = Model.Data.Ingredients.Where(s => !s.IsMain).OrderBy(s => s.OrderNumber).ToList();
 }
 
 <h1 class="display-4 text-capitalize">@Model.Data.Name</h1>

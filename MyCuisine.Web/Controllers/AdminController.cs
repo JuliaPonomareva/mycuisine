@@ -1,7 +1,4 @@
-﻿using FirebaseAdmin.Auth;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +6,7 @@ using MyCuisine.Data.Web.Models;
 using MyCuisine.Web.Constants;
 using MyCuisine.Web.Data;
 using MyCuisine.Web.Extensions;
-using MyCuisine.Web.Helpers;
 using MyCuisine.Web.Models;
-using System.Security.Claims;
 
 namespace MyCuisine.Web.Controllers
 {
@@ -34,13 +29,11 @@ namespace MyCuisine.Web.Controllers
 
         #region CookingStep
         [HttpGet("Admin/Recipes/{recipeId}/CookingSteps")]
-        public async Task<IActionResult> RecipeCookingSteps(int recipeId, [FromQuery] int offset = 0, [FromQuery] int? limit = null)
+        public async Task<IActionResult> RecipeCookingSteps(int recipeId)
         {
-            limit = limit ?? _appSettings.PageSize;
             var queryable = _dbContext.CookingSteps.AsNoTracking().Where(s => s.RecipeId == recipeId).AsQueryable();
             var total = await queryable.CountAsync();
             var entries = await queryable
-                .Skip(offset).Take(limit.Value)
                 .Select(s => new CookingStepsViewModel.CookingStepViewModel
                 {
                     Id = s.Id,
@@ -55,9 +48,8 @@ namespace MyCuisine.Web.Controllers
                 Data = new CookingStepsViewModel
                 {
                     RecipeId = recipeId,
-                    Entries = entries
-                },
-                Paging = new Paging(total, offset, limit.Value, (o, l) => $"/Admin/Recipes/{recipeId}/CookingSteps?offset={o}&limit={l}")
+                    Entries = entries.OrderBy(s => s.OrderNumber).ToList()
+                }
             });
         }
 
@@ -271,17 +263,15 @@ namespace MyCuisine.Web.Controllers
 
         #region RecipeItem
         [HttpGet("Admin/Recipes/{recipeId}/Items")]
-        public async Task<IActionResult> RecipeItems(int recipeId, [FromQuery] int offset = 0, [FromQuery] int? limit = null)
+        public async Task<IActionResult> RecipeItems(int recipeId)
         {
-            limit = limit ?? _appSettings.PageSize;
             var queryable = _dbContext.RecipeItems.AsNoTracking().Where(s => s.RecipeId == recipeId).AsQueryable();
             var total = await queryable.CountAsync();
             var entries = await queryable
-                .Skip(offset).Take(limit.Value)
                 .Select(s => new RecipeItemsViewModel.RecipeItemViewModel
                 {
                     Id = s.Id,
-                    Ingridient = s.Ingridient.Name,
+                    Ingredient = s.Ingredient.Name,
                     IsMain = s.IsMain,
                     OrderNumber = s.OrderNumber,
                     Quantity = s.Quantity,
@@ -294,16 +284,15 @@ namespace MyCuisine.Web.Controllers
                 Data = new RecipeItemsViewModel
                 {
                     RecipeId = recipeId,
-                    Entries = entries
-                },
-                Paging = new Paging(total, offset, limit.Value, (o, l) => $"/Admin/Recipes/{recipeId}/Items?offset={o}&limit={l}")
+                    Entries = entries.OrderBy(s => s.OrderNumber).ToList()
+                }
             });
         }
 
         private async Task<ViewModel<RecipeItemCreateViewModel>> GetRecipeItemCreateViewModel(
             int recipeId, RecipeItemCreateViewModel.FormModel form = null)
         {
-            var ingridients = await _dbContext.Ingridients.Where(s => s.IsActive)
+            var ingredients = await _dbContext.Ingredients.Where(s => s.IsActive)
                 .Select(s => new SelectListItem(s.Name, s.Id.ToString())).ToListAsync();
 
             var quantityTypes = await _dbContext.QuantityTypes.Where(s => s.IsActive)
@@ -314,8 +303,8 @@ namespace MyCuisine.Web.Controllers
                 Data = new RecipeItemCreateViewModel
                 {
                     RecipeId = recipeId,
-                    Ingridients = ingridients,
-                    QuantityTypes = quantityTypes,
+                    Ingredients = ingredients.OrderBy(s => s.Value).ToList(),
+                    QuantityTypes = quantityTypes.OrderBy(s => s.Value).ToList(),
                     Form = form
                 }
             };
@@ -339,17 +328,17 @@ namespace MyCuisine.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var entryWithSameIngridient = await _dbContext.RecipeItems
-                    .AnyAsync(s => s.RecipeId == recipeId && s.IngridientId == model.Data.Form.IngridientId);
+                var entryWithSameIngredient = await _dbContext.RecipeItems
+                    .AnyAsync(s => s.RecipeId == recipeId && s.IngredientId == model.Data.Form.IngredientId);
 
-                if (!entryWithSameIngridient)
+                if (!entryWithSameIngredient)
                 {
                     var entry = new RecipeItem
                     {
                         Quantity = model.Data.Form.Quantity,
                         IsMain = model.Data.Form.IsMain,
                         OrderNumber = model.Data.Form.OrderNumber,
-                        IngridientId = model.Data.Form.IngridientId,
+                        IngredientId = model.Data.Form.IngredientId,
                         QuantityTypeId = model.Data.Form.QuantityTypeId,
                         RecipeId = recipeId,
                         DateCreated = DateTimeOffset.Now,
@@ -363,7 +352,7 @@ namespace MyCuisine.Web.Controllers
                 }
                 else
                 {
-                    HttpContext.SetError($"Рецепт уже содержит этот ингридиент.");
+                    HttpContext.SetError($"Рецепт уже содержит этот ингредиент.");
                 }
             }
 
@@ -374,7 +363,7 @@ namespace MyCuisine.Web.Controllers
         private async Task<ViewModel<RecipeItemUpdateViewModel>> GetRecipeItemUpdateViewModel(
             int recipeId, RecipeItem entry, RecipeItemUpdateViewModel.FormModel form = null)
         {
-            var ingridients = await _dbContext.Ingridients.Where(s => s.IsActive)
+            var ingredients = await _dbContext.Ingredients.Where(s => s.IsActive)
                 .Select(s => new SelectListItem(s.Name, s.Id.ToString())).ToListAsync();
 
             var quantityTypes = await _dbContext.QuantityTypes.Where(s => s.IsActive)
@@ -385,11 +374,11 @@ namespace MyCuisine.Web.Controllers
                 Data = new RecipeItemUpdateViewModel
                 {
                     RecipeId = recipeId,
-                    Ingridients = ingridients,
-                    QuantityTypes = quantityTypes,
+                    Ingredients = ingredients.OrderBy(s => s.Value).ToList(),
+                    QuantityTypes = quantityTypes.OrderBy(s => s.Value).ToList(),
                     Form = form ?? new RecipeItemUpdateViewModel.FormModel
                     {
-                        IngridientId = entry.IngridientId,
+                        IngredientId = entry.IngredientId,
                         IsMain = entry.IsMain,
                         Quantity = entry.Quantity,
                         OrderNumber = entry.OrderNumber,
@@ -403,7 +392,7 @@ namespace MyCuisine.Web.Controllers
         public async Task<IActionResult> RecipeItemUpdate(int recipeId, int id)
         {
             var entry = await _dbContext.RecipeItems.AsNoTracking()
-                .Include(s => s.Ingridient).Include(s => s.QuantityType)
+                .Include(s => s.Ingredient).Include(s => s.QuantityType)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (entry == null)
@@ -431,16 +420,16 @@ namespace MyCuisine.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var entryWithSameIngridient = await _dbContext.RecipeItems
+                var entryWithSameIngredient = await _dbContext.RecipeItems
                     .AnyAsync(s => s.RecipeId == recipeId
-                        && s.IngridientId == model.Data.Form.IngridientId && s.Id != id);
+                        && s.IngredientId == model.Data.Form.IngredientId && s.Id != id);
 
-                if (!entryWithSameIngridient)
+                if (!entryWithSameIngredient)
                 {
                     entry.Quantity = model.Data.Form.Quantity;
                     entry.IsMain = model.Data.Form.IsMain;
                     entry.OrderNumber = model.Data.Form.OrderNumber;
-                    entry.IngridientId = model.Data.Form.IngridientId;
+                    entry.IngredientId = model.Data.Form.IngredientId;
                     entry.QuantityTypeId = model.Data.Form.QuantityTypeId;
                     entry.DateModified = DateTimeOffset.Now;
 
@@ -450,7 +439,7 @@ namespace MyCuisine.Web.Controllers
                 }
                 else
                 {
-                    HttpContext.SetError($"Рецепт уже содержит этот ингридиент.");
+                    HttpContext.SetError($"Рецепт уже содержит этот ингредиент.");
                 }
             }
 
@@ -485,7 +474,10 @@ namespace MyCuisine.Web.Controllers
                 queryable = queryable.Where(s => s.Name.Contains(search)
                     || s.CuisineType.Name.Contains(search)
                     || s.DishType.Name.Contains(search)
-                    || s.RecipesOtherProperties.Any(x => x.OtherProperty.Name.Contains(search)));
+                    || s.RecipesOtherProperties.Any(x => x.OtherProperty.Name.Contains(search))
+                    || s.RecipeItems.Any(x => x.Ingredient.Name.Contains(search)
+                        || x.QuantityType.Name.Contains(search))
+                    || s.CookingSteps.Any(x => x.Name.Contains(search)));
             }
             if (!showAll)
             {
@@ -493,6 +485,7 @@ namespace MyCuisine.Web.Controllers
             }
             var total = await queryable.CountAsync();
             var entries = await queryable
+                .OrderBy(s => s.Name)
                 .Skip(offset).Take(limit.Value)
                 .Select(s => new RecipesViewModel.RecipeViewModel
                 {
@@ -535,9 +528,9 @@ namespace MyCuisine.Web.Controllers
             {
                 Data = new RecipeCreateViewModel
                 {
-                    DishTypes = dishTypes,
-                    CuisineTypes = cuisineTypes,
-                    OtherProperties = otherProperties,
+                    DishTypes = dishTypes.OrderBy(s => s.Value).ToList(),
+                    CuisineTypes = cuisineTypes.OrderBy(s => s.Value).ToList(),
+                    OtherProperties = otherProperties.OrderBy(s => s.Value).ToList(),
                     Form = form
                 }
             };
@@ -638,9 +631,9 @@ namespace MyCuisine.Web.Controllers
             {
                 Data = new RecipeUpdateViewModel
                 {
-                    DishTypes = dishTypes,
-                    CuisineTypes = cuisineTypes,
-                    OtherProperties = otherProperties,
+                    DishTypes = dishTypes.OrderBy(s => s.Value).ToList(),
+                    CuisineTypes = cuisineTypes.OrderBy(s => s.Value).ToList(),
+                    OtherProperties = otherProperties.OrderBy(s => s.Value).ToList(),
                     Image = entry.Image,
                     Form = form ?? new RecipeUpdateViewModel.FormModel
                     {
@@ -769,13 +762,13 @@ namespace MyCuisine.Web.Controllers
         }
         #endregion
 
-        #region Ingridient
+        #region Ingredient
         [HttpGet]
-        public async Task<IActionResult> Ingridients([FromQuery] int offset = 0, [FromQuery] int? limit = null,
+        public async Task<IActionResult> Ingredients([FromQuery] int offset = 0, [FromQuery] int? limit = null,
             [FromQuery] string search = null, [FromQuery] bool showAll = false)
         {
             limit = limit ?? _appSettings.PageSize;
-            var queryable = _dbContext.Ingridients.AsNoTracking().AsQueryable();
+            var queryable = _dbContext.Ingredients.AsNoTracking().AsQueryable();
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.ToLower();
@@ -786,26 +779,26 @@ namespace MyCuisine.Web.Controllers
                 queryable = queryable.Where(s => s.IsActive);
             }
             var total = await queryable.CountAsync();
-            var entries = await queryable.Skip(offset).Take(limit.Value).ToListAsync();
-            return View(new ViewModel<IngridientsViewModel>
+            var entries = await queryable.OrderBy(s => s.Name).Skip(offset).Take(limit.Value).ToListAsync();
+            return View(new ViewModel<IngredientsViewModel>
             {
-                Data = new IngridientsViewModel
+                Data = new IngredientsViewModel
                 {
                     Entries = entries
                 },
-                Paging = new Paging(total, offset, limit.Value, (o, l) => $"/Admin/Ingridients?offset={o}&limit={l}&search={search}&showAll={showAll}")
+                Paging = new Paging(total, offset, limit.Value, (o, l) => $"/Admin/Ingredients?offset={o}&limit={l}&search={search}&showAll={showAll}")
             });
         }
 
-        [HttpGet("Admin/IngridientCreate")]
-        public IActionResult IngridientCreate()
+        [HttpGet("Admin/IngredientCreate")]
+        public IActionResult IngredientCreate()
         {
             return View();
         }
 
-        [HttpPost("Admin/IngridientCreate")]
+        [HttpPost("Admin/IngredientCreate")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> IngridientCreate(ViewModel<IngridientCreateViewModel> model)
+        public async Task<IActionResult> IngredientCreate(ViewModel<IngredientCreateViewModel> model)
         {
             if (model?.Data?.Form == null)
             {
@@ -815,7 +808,7 @@ namespace MyCuisine.Web.Controllers
             if (ModelState.IsValid)
             {
                 model.Data.Form.Name = model.Data.Form.Name.ToLower();
-                var entryWithSameName = await _dbContext.Ingridients.AnyAsync(s => s.Name == model.Data.Form.Name);
+                var entryWithSameName = await _dbContext.Ingredients.AnyAsync(s => s.Name == model.Data.Form.Name);
                 if (!entryWithSameName)
                 {
                     string image = null;
@@ -828,7 +821,7 @@ namespace MyCuisine.Web.Controllers
                             return View(model);
                         }
                         var fileName = $"{Guid.NewGuid()}{Path.GetExtension(model.Data.Form.Image.FileName)}";
-                        image = $"/img/ingridients/{fileName}";
+                        image = $"/img/ingredients/{fileName}";
 
                         using (var stream = System.IO.File.Create(Path.Join(_environment.WebRootPath, image)))
                         {
@@ -836,7 +829,7 @@ namespace MyCuisine.Web.Controllers
                         }
 
                     }
-                    var entry = new Ingridient
+                    var entry = new Ingredient
                     {
                         Name = model.Data.Form.Name,
                         Image = image,
@@ -844,35 +837,35 @@ namespace MyCuisine.Web.Controllers
                         DateCreated = DateTimeOffset.Now,
                         DateModified = DateTimeOffset.Now
                     };
-                    await _dbContext.Ingridients.AddAsync(entry);
+                    await _dbContext.Ingredients.AddAsync(entry);
                     await _dbContext.SaveChangesAsync();
 
-                    return RedirectToAction(nameof(Ingridients));
+                    return RedirectToAction(nameof(Ingredients));
                 }
                 else
                 {
-                    HttpContext.SetError($"Ингридиент с названием {model.Data.Form.Name} уже существует.");
+                    HttpContext.SetError($"Ингредиент с названием {model.Data.Form.Name} уже существует.");
                 }
             }
 
             return View(model);
         }
 
-        [HttpGet("Admin/Ingridients/{id}")]
-        public async Task<IActionResult> IngridientUpdate(int id)
+        [HttpGet("Admin/Ingredients/{id}")]
+        public async Task<IActionResult> IngredientUpdate(int id)
         {
-            var entry = await _dbContext.Ingridients.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
+            var entry = await _dbContext.Ingredients.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
             if (entry == null)
             {
                 return NotFound();
             }
 
-            return View(new ViewModel<IngridientUpdateViewModel>
+            return View(new ViewModel<IngredientUpdateViewModel>
             {
-                Data = new IngridientUpdateViewModel
+                Data = new IngredientUpdateViewModel
                 {
                     Image = entry.Image,
-                    Form = new IngridientUpdateViewModel.FormModel
+                    Form = new IngredientUpdateViewModel.FormModel
                     {
                         Name = entry.Name,
                         IsActive = entry.IsActive,
@@ -882,16 +875,16 @@ namespace MyCuisine.Web.Controllers
             });
         }
 
-        [HttpPost("Admin/Ingridients/{id}")]
+        [HttpPost("Admin/Ingredients/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> IngridientUpdate(int id, ViewModel<IngridientUpdateViewModel> model)
+        public async Task<IActionResult> IngredientUpdate(int id, ViewModel<IngredientUpdateViewModel> model)
         {
             if (model?.Data?.Form == null)
             {
                 return BadRequest();
             }
 
-            var entry = await _dbContext.Ingridients.FirstOrDefaultAsync(s => s.Id == id);
+            var entry = await _dbContext.Ingredients.FirstOrDefaultAsync(s => s.Id == id);
             if (entry == null)
             {
                 return NotFound();
@@ -902,7 +895,7 @@ namespace MyCuisine.Web.Controllers
             if (ModelState.IsValid)
             {
                 model.Data.Form.Name = model.Data.Form.Name.ToLower();
-                var entryWithSameName = await _dbContext.Ingridients
+                var entryWithSameName = await _dbContext.Ingredients
                     .AnyAsync(s => s.Name == model.Data.Form.Name && s.Id != id);
                 if (!entryWithSameName)
                 {
@@ -922,7 +915,7 @@ namespace MyCuisine.Web.Controllers
                         }
 
                         var fileName = $"{Guid.NewGuid()}{Path.GetExtension(model.Data.Form.Image.FileName)}";
-                        image = $"/img/ingridients/{fileName}";
+                        image = $"/img/ingredients/{fileName}";
 
                         using (var stream = System.IO.File.Create(Path.Join(_environment.WebRootPath, image)))
                         {
@@ -943,11 +936,11 @@ namespace MyCuisine.Web.Controllers
 
                     await _dbContext.SaveChangesAsync();
 
-                    return RedirectToAction(nameof(Ingridients));
+                    return RedirectToAction(nameof(Ingredients));
                 }
                 else
                 {
-                    HttpContext.SetError($"Ингридиент с названием {model.Data.Form.Name} уже существует.");
+                    HttpContext.SetError($"Ингредиент с названием {model.Data.Form.Name} уже существует.");
                 }
             }
 
@@ -972,7 +965,7 @@ namespace MyCuisine.Web.Controllers
                 queryable = queryable.Where(s => s.IsActive);
             }
             var total = await queryable.CountAsync();
-            var entries = await queryable.Skip(offset).Take(limit.Value).ToListAsync();
+            var entries = await queryable.OrderBy(s => s.Name).Skip(offset).Take(limit.Value).ToListAsync();
             return View(new ViewModel<CuisineTypesViewModel>
             {
                 Data = new CuisineTypesViewModel
@@ -1106,7 +1099,7 @@ namespace MyCuisine.Web.Controllers
                 queryable = queryable.Where(s => s.IsActive);
             }
             var total = await queryable.CountAsync();
-            var entries = await queryable.Skip(offset).Take(limit.Value).ToListAsync();
+            var entries = await queryable.OrderBy(s => s.Name).Skip(offset).Take(limit.Value).ToListAsync();
             return View(new ViewModel<DishTypesViewModel>
             {
                 Data = new DishTypesViewModel
@@ -1240,7 +1233,7 @@ namespace MyCuisine.Web.Controllers
                 queryable = queryable.Where(s => s.IsActive);
             }
             var total = await queryable.CountAsync();
-            var entries = await queryable.Skip(offset).Take(limit.Value).ToListAsync();
+            var entries = await queryable.OrderBy(s => s.Name).Skip(offset).Take(limit.Value).ToListAsync();
             return View(new ViewModel<QuantityTypesViewModel>
             {
                 Data = new QuantityTypesViewModel
@@ -1375,7 +1368,7 @@ namespace MyCuisine.Web.Controllers
                 queryable = queryable.Where(s => s.IsActive);
             }
             var total = await queryable.CountAsync();
-            var entries = await queryable.Skip(offset).Take(limit.Value).ToListAsync();
+            var entries = await queryable.OrderBy(s => s.Name).Skip(offset).Take(limit.Value).ToListAsync();
             return View(new ViewModel<OtherPropertiesViewModel>
             {
                 Data = new OtherPropertiesViewModel

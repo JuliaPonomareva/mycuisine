@@ -13,12 +13,12 @@
         public List<string> OtherProperties { get; set; } = new List<string>();
     }
 
-    public class RecipeDetailIngridientsViewModel
+    public class RecipeDetailIngredientsViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<IngridientViewModel> Ingridients { get; set; } = new List<IngridientViewModel>();
-        public class IngridientViewModel
+        public List<IngredientViewModel> Ingredients { get; set; } = new List<IngredientViewModel>();
+        public class IngredientViewModel
         {
             public string Name { get; set; }
             public string Image { get; set; }

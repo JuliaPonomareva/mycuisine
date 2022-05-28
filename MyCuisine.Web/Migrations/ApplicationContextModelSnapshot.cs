@@ -124,7 +124,7 @@ namespace MyCuisine.Web.Migrations
                     b.ToTable("DishTypes", (string)null);
                 });
 
-            modelBuilder.Entity("MyCuisine.Data.Web.Models.Ingridient", b =>
+            modelBuilder.Entity("MyCuisine.Data.Web.Models.Ingredient", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -153,9 +153,9 @@ namespace MyCuisine.Web.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("IX_Ingridients_Name");
+                        .HasDatabaseName("IX_Ingredients_Name");
 
-                    b.ToTable("Ingridients", (string)null);
+                    b.ToTable("Ingredients", (string)null);
                 });
 
             modelBuilder.Entity("MyCuisine.Data.Web.Models.OtherProperty", b =>
@@ -290,7 +290,7 @@ namespace MyCuisine.Web.Migrations
                     b.Property<DateTimeOffset>("DateModified")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("IngridientId")
+                    b.Property<int>("IngredientId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsMain")
@@ -310,13 +310,13 @@ namespace MyCuisine.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IngridientId");
+                    b.HasIndex("IngredientId");
 
                     b.HasIndex("QuantityTypeId");
 
-                    b.HasIndex("RecipeId", "IngridientId")
+                    b.HasIndex("RecipeId", "IngredientId")
                         .IsUnique()
-                        .HasDatabaseName("IX_RecipeItems_RecipeId_IngridientId");
+                        .HasDatabaseName("IX_RecipeItems_RecipeId_IngredientId");
 
                     b.ToTable("RecipeItems", (string)null);
                 });
@@ -486,9 +486,9 @@ namespace MyCuisine.Web.Migrations
 
             modelBuilder.Entity("MyCuisine.Data.Web.Models.RecipeItem", b =>
                 {
-                    b.HasOne("MyCuisine.Data.Web.Models.Ingridient", "Ingridient")
+                    b.HasOne("MyCuisine.Data.Web.Models.Ingredient", "Ingredient")
                         .WithMany("RecipeItems")
-                        .HasForeignKey("IngridientId")
+                        .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -504,7 +504,7 @@ namespace MyCuisine.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Ingridient");
+                    b.Navigation("Ingredient");
 
                     b.Navigation("QuantityType");
 
@@ -578,7 +578,7 @@ namespace MyCuisine.Web.Migrations
                     b.Navigation("Recipes");
                 });
 
-            modelBuilder.Entity("MyCuisine.Data.Web.Models.Ingridient", b =>
+            modelBuilder.Entity("MyCuisine.Data.Web.Models.Ingredient", b =>
                 {
                     b.Navigation("RecipeItems");
                 });

@@ -12,8 +12,8 @@ using MyCuisine.Web.Data;
 namespace MyCuisine.Web.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220527142018_uindexes")]
-    partial class uindexes
+    [Migration("20220528172553_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -44,9 +44,6 @@ namespace MyCuisine.Web.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -60,11 +57,9 @@ namespace MyCuisine.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("RecipeId", "Name")
                         .IsUnique()
-                        .HasDatabaseName("IX_CookingSteps_Name");
-
-                    b.HasIndex("RecipeId");
+                        .HasDatabaseName("IX_CookingSteps_RecipeId_Name");
 
                     b.ToTable("CookingSteps", (string)null);
                 });
@@ -131,7 +126,7 @@ namespace MyCuisine.Web.Migrations
                     b.ToTable("DishTypes", (string)null);
                 });
 
-            modelBuilder.Entity("MyCuisine.Data.Web.Models.Ingridient", b =>
+            modelBuilder.Entity("MyCuisine.Data.Web.Models.Ingredient", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,9 +155,9 @@ namespace MyCuisine.Web.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("IX_Ingridients_Name");
+                        .HasDatabaseName("IX_Ingredients_Name");
 
-                    b.ToTable("Ingridients", (string)null);
+                    b.ToTable("Ingredients", (string)null);
                 });
 
             modelBuilder.Entity("MyCuisine.Data.Web.Models.OtherProperty", b =>
@@ -244,6 +239,9 @@ namespace MyCuisine.Web.Migrations
                     b.Property<DateTimeOffset>("DateModified")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("DishTypeId")
                         .HasColumnType("int");
 
@@ -294,7 +292,7 @@ namespace MyCuisine.Web.Migrations
                     b.Property<DateTimeOffset>("DateModified")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("IngridientId")
+                    b.Property<int>("IngredientId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsMain")
@@ -314,11 +312,13 @@ namespace MyCuisine.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IngridientId");
+                    b.HasIndex("IngredientId");
 
                     b.HasIndex("QuantityTypeId");
 
-                    b.HasIndex("RecipeId");
+                    b.HasIndex("RecipeId", "IngredientId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_RecipeItems_RecipeId_IngredientId");
 
                     b.ToTable("RecipeItems", (string)null);
                 });
@@ -344,9 +344,11 @@ namespace MyCuisine.Web.Migrations
 
                     b.HasIndex("OtherPropertyId");
 
-                    b.HasIndex("RecipeId");
+                    b.HasIndex("RecipeId", "OtherPropertyId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_RecipesOtherProperties_RecipeId_OtherPropertyId");
 
-                    b.ToTable("RecipeOtherProperty");
+                    b.ToTable("RecipesOtherProperties", (string)null);
                 });
 
             modelBuilder.Entity("MyCuisine.Data.Web.Models.RecipeRate", b =>
@@ -358,7 +360,8 @@ namespace MyCuisine.Web.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("datetimeoffset");
@@ -379,7 +382,9 @@ namespace MyCuisine.Web.Migrations
 
                     b.HasIndex("RecipeId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "RecipeId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_RecipeRates_UserId_RecipeId");
 
                     b.ToTable("RecipeRates", (string)null);
                 });
@@ -410,7 +415,9 @@ namespace MyCuisine.Web.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -432,15 +439,6 @@ namespace MyCuisine.Web.Migrations
                     b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("DateModified")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("RecipeId")
                         .HasColumnType("int");
 
@@ -451,7 +449,9 @@ namespace MyCuisine.Web.Migrations
 
                     b.HasIndex("RecipeId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "RecipeId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UserRecipes_UserId_RecipeId");
 
                     b.ToTable("UserRecipes", (string)null);
                 });
@@ -488,9 +488,9 @@ namespace MyCuisine.Web.Migrations
 
             modelBuilder.Entity("MyCuisine.Data.Web.Models.RecipeItem", b =>
                 {
-                    b.HasOne("MyCuisine.Data.Web.Models.Ingridient", "Ingridient")
+                    b.HasOne("MyCuisine.Data.Web.Models.Ingredient", "Ingredient")
                         .WithMany("RecipeItems")
-                        .HasForeignKey("IngridientId")
+                        .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -506,7 +506,7 @@ namespace MyCuisine.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Ingridient");
+                    b.Navigation("Ingredient");
 
                     b.Navigation("QuantityType");
 
@@ -580,7 +580,7 @@ namespace MyCuisine.Web.Migrations
                     b.Navigation("Recipes");
                 });
 
-            modelBuilder.Entity("MyCuisine.Data.Web.Models.Ingridient", b =>
+            modelBuilder.Entity("MyCuisine.Data.Web.Models.Ingredient", b =>
                 {
                     b.Navigation("RecipeItems");
                 });

@@ -14,8 +14,8 @@ namespace MyCuisine.Data.Web.Models
         public int RecipeId { get; set; }
         public Recipe Recipe { get; set; }
 
-        public int IngridientId { get; set; }
-        public Ingridient Ingridient { get; set; }
+        public int IngredientId { get; set; }
+        public Ingredient Ingredient { get; set; }
 
         public int QuantityTypeId { get; set; }
         public QuantityType QuantityType { get; set; }
@@ -25,9 +25,9 @@ namespace MyCuisine.Data.Web.Models
         public static void DescribeTable(ModelBuilder builder)
         {
             builder.Entity<RecipeItem>()
-                .HasIndex(entry => new { entry.RecipeId, entry.IngridientId })
+                .HasIndex(entry => new { entry.RecipeId, entry.IngredientId })
                 .IsUnique(true)
-                .HasDatabaseName("IX_RecipeItems_RecipeId_IngridientId");
+                .HasDatabaseName("IX_RecipeItems_RecipeId_IngredientId");
 
             builder.Entity<RecipeItem>().ToTable("RecipeItems");
         }

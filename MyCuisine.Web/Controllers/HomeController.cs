@@ -58,9 +58,12 @@ namespace MyCuisine.Web.Controllers
                     DishTypeId = s.DishTypeId,
                     DishType = s.DishType.Name,
                     OtherProperties = s.RecipesOtherProperties
-                        .Select(x => x.OtherProperty)
-                        .Where(x => x.IsActive)
-                        .Select(x => new OptionViewModel { Id = x.Id, Name = x.Name })
+                        .Where(x => x.OtherProperty.IsActive)
+                        .Select(x => new OptionViewModel
+                        {
+                            Id = x.OtherProperty.Id,
+                            Name = x.OtherProperty.Name
+                        })
                         .ToList(),
                     DateModified = s.DateModified,
                     IsSaved = userId > 0
@@ -115,18 +118,18 @@ namespace MyCuisine.Web.Controllers
             });
         }
 
-        [HttpGet("RecipeDetail/Ingridients/{recipeId}")]
-        public async Task<IActionResult> RecipeDetailIngridients(int recipeId)
+        [HttpGet("RecipeDetail/Ingredients/{recipeId}")]
+        public async Task<IActionResult> RecipeDetailIngredients(int recipeId)
         {
             var entry = await _dbContext.Recipes
-                .Select(s => new RecipeDetailIngridientsViewModel
+                .Select(s => new RecipeDetailIngredientsViewModel
                 {
                     Id = s.Id,
                     Name = s.Name,
-                    Ingridients = s.RecipeItems.Select(x => new RecipeDetailIngridientsViewModel.IngridientViewModel
+                    Ingredients = s.RecipeItems.Select(x => new RecipeDetailIngredientsViewModel.IngredientViewModel
                     {
-                        Name = x.Ingridient.Name,
-                        Image = x.Ingridient.Image,
+                        Name = x.Ingredient.Name,
+                        Image = x.Ingredient.Image,
                         IsMain = x.IsMain,
                         OrderNumber = x.OrderNumber,
                         Quantity = x.Quantity,
@@ -140,7 +143,7 @@ namespace MyCuisine.Web.Controllers
                 return NotFound();
             }
 
-            return View(new ViewModel<RecipeDetailIngridientsViewModel>
+            return View(new ViewModel<RecipeDetailIngredientsViewModel>
             {
                 Data = entry
             });
@@ -217,7 +220,7 @@ namespace MyCuisine.Web.Controllers
 
         [Authorize]
         [HttpGet("RecipeDetail/RatesAdd/{recipeId}")]
-        public async Task<IActionResult> RecipeDetailRatesadd(int recipeId)
+        public async Task<IActionResult> RecipeDetailRatesAdd(int recipeId)
         {
             var userId = int.Parse(User.Claims.First(s => s.Type == ClaimTypes.Sid).Value);
 
@@ -255,7 +258,7 @@ namespace MyCuisine.Web.Controllers
 
         [Authorize]
         [HttpPost("RecipeDetail/RatesAdd/{recipeId}")]
-        public async Task<IActionResult> RecipeDetailRatesadd(int recipeId, ViewModel<RecipeDetailRatesAddViewModel> model)
+        public async Task<IActionResult> RecipeDetailRatesAdd(int recipeId, ViewModel<RecipeDetailRatesAddViewModel> model)
         {
             if (model?.Data?.Form == null)
             {
@@ -378,9 +381,12 @@ WHERE r.[Id] = @recipeId
                     DishTypeId = s.Recipe.DishTypeId,
                     DishType = s.Recipe.DishType.Name,
                     OtherProperties = s.Recipe.RecipesOtherProperties
-                        .Select(x => x.OtherProperty)
-                        .Where(x => x.IsActive)
-                        .Select(x => new OptionViewModel { Id = x.Id, Name = x.Name })
+                        .Where(x => x.OtherProperty.IsActive)
+                        .Select(x => new OptionViewModel
+                        {
+                            Id = x.OtherProperty.Id,
+                            Name = x.OtherProperty.Name
+                        })
                         .ToList(),
                     DateModified = s.Recipe.DateModified,
                     IsSaved = true
@@ -454,9 +460,9 @@ WHERE r.[Id] = @recipeId
 
             return new FilterViewModel
             {
-                DishTypes = dishTypes,
-                CuisineTypes = cuisineTypes,
-                OtherProperties = otherProperties,
+                DishTypes = dishTypes.OrderBy(s => s.Value).ToList(),
+                CuisineTypes = cuisineTypes.OrderBy(s => s.Value).ToList(),
+                OtherProperties = otherProperties.OrderBy(s => s.Value).ToList(),
                 Form = filterForm
             };
         }

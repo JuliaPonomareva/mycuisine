@@ -12,7 +12,7 @@ namespace MyCuisine.Web.Data
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<RecipeItem> RecipeItems { get; set; }
         public DbSet<QuantityType> QuantityTypes { get; set; }
-        public DbSet<Ingridient> Ingridients { get; set; }
+        public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<DishType> DishTypes { get; set; }
         public DbSet<CuisineType> CuisineTypes { get; set; }
         public DbSet<OtherProperty> OtherProperties { get; set; }
@@ -28,7 +28,7 @@ namespace MyCuisine.Web.Data
             RecipeExtension.DescribeTable(modelBuilder);
             RecipeItemExtension.DescribeTable(modelBuilder);
             QuantityTypeExtension.DescribeTable(modelBuilder);
-            IngridientExtension.DescribeTable(modelBuilder);
+            IngredientExtension.DescribeTable(modelBuilder);
             DishTypeExtension.DescribeTable(modelBuilder);
             CuisineTypeExtension.DescribeTable(modelBuilder);
             OtherPropertyExtension.DescribeTable(modelBuilder);

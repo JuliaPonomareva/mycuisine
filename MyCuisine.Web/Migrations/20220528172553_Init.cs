@@ -42,7 +42,7 @@ namespace MyCuisine.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Ingridients",
+                name: "Ingredients",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -55,7 +55,7 @@ namespace MyCuisine.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ingridients", x => x.Id);
+                    table.PrimaryKey("PK_Ingredients", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -97,7 +97,7 @@ namespace MyCuisine.Web.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     IsAdmin = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -115,6 +115,7 @@ namespace MyCuisine.Web.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PersonsCount = table.Column<int>(type: "int", nullable: true),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Rate = table.Column<float>(type: "real", nullable: false),
@@ -152,7 +153,6 @@ namespace MyCuisine.Web.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OrderNumber = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     DateModified = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     RecipeId = table.Column<int>(type: "int", nullable: false)
@@ -174,23 +174,22 @@ namespace MyCuisine.Web.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Quantity = table.Column<double>(type: "float", nullable: false),
+                    Quantity = table.Column<float>(type: "real", nullable: false),
                     IsMain = table.Column<bool>(type: "bit", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     DateModified = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     OrderNumber = table.Column<int>(type: "int", nullable: false),
                     RecipeId = table.Column<int>(type: "int", nullable: false),
-                    IngridientId = table.Column<int>(type: "int", nullable: false),
+                    IngredientId = table.Column<int>(type: "int", nullable: false),
                     QuantityTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RecipeItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RecipeItems_Ingridients_IngridientId",
-                        column: x => x.IngridientId,
-                        principalTable: "Ingridients",
+                        name: "FK_RecipeItems_Ingredients_IngredientId",
+                        column: x => x.IngredientId,
+                        principalTable: "Ingredients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -208,40 +207,13 @@ namespace MyCuisine.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RecipeOtherProperty",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DateCreated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    RecipeId = table.Column<int>(type: "int", nullable: false),
-                    OtherPropertyId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RecipeOtherProperty", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RecipeOtherProperty_OtherProperties_OtherPropertyId",
-                        column: x => x.OtherPropertyId,
-                        principalTable: "OtherProperties",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RecipeOtherProperty_Recipes_RecipeId",
-                        column: x => x.RecipeId,
-                        principalTable: "Recipes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "RecipeRates",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Rate = table.Column<float>(type: "real", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Comment = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     DateCreated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     DateModified = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     RecipeId = table.Column<int>(type: "int", nullable: false),
@@ -265,15 +237,39 @@ namespace MyCuisine.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RecipesOtherProperties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DateCreated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    RecipeId = table.Column<int>(type: "int", nullable: false),
+                    OtherPropertyId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecipesOtherProperties", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RecipesOtherProperties_OtherProperties_OtherPropertyId",
+                        column: x => x.OtherPropertyId,
+                        principalTable: "OtherProperties",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RecipesOtherProperties_Recipes_RecipeId",
+                        column: x => x.RecipeId,
+                        principalTable: "Recipes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserRecipes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    DateModified = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     RecipeId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -295,9 +291,10 @@ namespace MyCuisine.Web.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CookingSteps_RecipeId",
+                name: "IX_CookingSteps_RecipeId_Name",
                 table: "CookingSteps",
-                column: "RecipeId");
+                columns: new[] { "RecipeId", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CuisineTypes_Name",
@@ -312,8 +309,8 @@ namespace MyCuisine.Web.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ingridients_Name",
-                table: "Ingridients",
+                name: "IX_Ingredients_Name",
+                table: "Ingredients",
                 column: "Name",
                 unique: true);
 
@@ -330,9 +327,9 @@ namespace MyCuisine.Web.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RecipeItems_IngridientId",
+                name: "IX_RecipeItems_IngredientId",
                 table: "RecipeItems",
-                column: "IngridientId");
+                column: "IngredientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RecipeItems_QuantityTypeId",
@@ -340,19 +337,10 @@ namespace MyCuisine.Web.Migrations
                 column: "QuantityTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RecipeItems_RecipeId",
+                name: "IX_RecipeItems_RecipeId_IngredientId",
                 table: "RecipeItems",
-                column: "RecipeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RecipeOtherProperty_OtherPropertyId",
-                table: "RecipeOtherProperty",
-                column: "OtherPropertyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RecipeOtherProperty_RecipeId",
-                table: "RecipeOtherProperty",
-                column: "RecipeId");
+                columns: new[] { "RecipeId", "IngredientId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RecipeRates_RecipeId",
@@ -360,9 +348,10 @@ namespace MyCuisine.Web.Migrations
                 column: "RecipeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RecipeRates_UserId",
+                name: "IX_RecipeRates_UserId_RecipeId",
                 table: "RecipeRates",
-                column: "UserId");
+                columns: new[] { "UserId", "RecipeId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Recipes_CuisineTypeId",
@@ -375,14 +364,32 @@ namespace MyCuisine.Web.Migrations
                 column: "DishTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Recipes_Name",
+                table: "Recipes",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RecipesOtherProperties_OtherPropertyId",
+                table: "RecipesOtherProperties",
+                column: "OtherPropertyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RecipesOtherProperties_RecipeId_OtherPropertyId",
+                table: "RecipesOtherProperties",
+                columns: new[] { "RecipeId", "OtherPropertyId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserRecipes_RecipeId",
                 table: "UserRecipes",
                 column: "RecipeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRecipes_UserId",
+                name: "IX_UserRecipes_UserId_RecipeId",
                 table: "UserRecipes",
-                column: "UserId");
+                columns: new[] { "UserId", "RecipeId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -400,16 +407,16 @@ namespace MyCuisine.Web.Migrations
                 name: "RecipeItems");
 
             migrationBuilder.DropTable(
-                name: "RecipeOtherProperty");
+                name: "RecipeRates");
 
             migrationBuilder.DropTable(
-                name: "RecipeRates");
+                name: "RecipesOtherProperties");
 
             migrationBuilder.DropTable(
                 name: "UserRecipes");
 
             migrationBuilder.DropTable(
-                name: "Ingridients");
+                name: "Ingredients");
 
             migrationBuilder.DropTable(
                 name: "QuantityTypes");

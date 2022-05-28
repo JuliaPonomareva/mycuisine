@@ -49,7 +49,7 @@ namespace MyCuisine.Web.Models
                     new TableColumn(nameof(RecipeViewModel.IsActive), "Статус"),
                     new TableColumn(nameof(RecipeViewModel.DishType), "Блюдо"),
                     new TableColumn(nameof(RecipeViewModel.CuisineType), "Кухня"),
-                    new TableColumn(nameof(RecipeViewModel.ItemsCount), "Ингридиенты")
+                    new TableColumn(nameof(RecipeViewModel.ItemsCount), "Ингредиенты")
                     {
                         Url = (id) => $"/Admin/Recipes/{id}/Items"
                     },

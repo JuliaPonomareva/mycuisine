@@ -1,13 +1,13 @@
 ﻿@model ViewModel<RecipeItemCreateViewModel>
 @{
-    ViewData["Title"] = "Создать ингридиент рецепта";
+    ViewData["Title"] = "Создать ингредиент рецепта";
 }
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <script>
         $(document).ready(function() {
-            $('#@nameof(Model.Data.Form.IngridientId)').select2();
+            $('#@nameof(Model.Data.Form.IngredientId)').select2();
             $('#@nameof(Model.Data.Form.QuantityTypeId)').select2();
         });
     </script>
@@ -17,10 +17,10 @@
 
 <form role="form" method="post" asp-antiforgery="true">
     <div class="form-group mt-2">
-        <label for="@nameof(Model.Data.Form.IngridientId)" class="control-label">Ингридиент:*</label>
-        <select class="form-select" id="@nameof(Model.Data.Form.IngridientId)" asp-for="Data.Form.IngridientId" asp-items="Model.Data.Ingridients">
+        <label for="@nameof(Model.Data.Form.IngredientId)" class="control-label">Ингредиент:*</label>
+        <select class="form-select" id="@nameof(Model.Data.Form.IngredientId)" asp-for="Data.Form.IngredientId" asp-items="Model.Data.Ingredients">
         </select>
-        <span asp-validation-for="Data.Form.IngridientId" class="text-danger text-break"></span>
+        <span asp-validation-for="Data.Form.IngredientId" class="text-danger text-break"></span>
     </div>
     <div class="form-group mt-2">
         <label for="@nameof(Model.Data.Form.QuantityTypeId)" class="control-label">Единицы измерения:*</label>
