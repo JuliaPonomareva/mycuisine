@@ -1,0 +1,39 @@
+﻿@using MyCuisine.Web.Models
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Вход";
+}
+
+<div class="text-center">
+    <div id="firebaseui-auth-container"></div>
+    <form id="loginForm" method="post">
+        <input type="hidden" name="@nameof(LoginViewModel.IdToken)" value="@Model?.IdToken" />
+        <input type="hidden" name="@nameof(LoginViewModel.ReturnUrl)" value="@Model?.ReturnUrl" />
+    </form>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth__ru.js"></script>
+<link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+<script>
+    var uiConfig = {
+        callbacks: {
+            signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+                authResult.user.getIdToken()
+                    .then(function (token) {
+                        document.querySelector("[name=@nameof(LoginViewModel.IdToken)]").value = token;
+                        document.forms["loginForm"].submit();
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+                return false;
+            },
+        },
+        signInFlow: 'popup',
+        signInOptions: [
+            firebase.auth.EmailAuthProvider.PROVIDER_ID,
+        ],
+    };
+    var ui = new firebaseui.auth.AuthUI(firebase.auth());
+    ui.start('#firebaseui-auth-container', uiConfig);
+</script>

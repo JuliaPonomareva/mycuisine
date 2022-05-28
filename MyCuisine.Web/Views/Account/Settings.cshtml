@@ -1,0 +1,28 @@
+﻿@model ViewModel<UserViewModel>
+@{
+    ViewData["Title"] = "Учетная запись";
+}
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<h1 class="display-4">@ViewData["Title"]</h1>
+
+<p><i class="bi bi-envelope"></i> @Model.Data.Email</p>
+
+<form role="form" method="post" asp-antiforgery="true">
+    <div class="input-group mt-3">
+        <button class="btn btn-outline-primary" type="submit">Изменить имя</button>
+        <input asp-for="Data.UpdateNameForm.Name" class="form-control">
+    </div>
+    <span asp-validation-for="Data.UpdateNameForm.Name" class="text-danger text-break"></span>
+</form>
+
+<form role="form" method="post" asp-antiforgery="true">
+    <div class="input-group mt-3">
+        <button class="btn btn-outline-primary" type="submit">Изменить пароль</button>
+        <input asp-for="Data.UpdatePasswordForm.Password" type="password" class="form-control">
+    </div>
+    <span asp-validation-for="Data.UpdatePasswordForm.Password" class="text-danger text-break"></span>
+</form>

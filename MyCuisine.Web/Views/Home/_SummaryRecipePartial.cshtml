@@ -1,0 +1,94 @@
+﻿@model SummaryRecipesViewModel.SummaryRecipeViewModel
+@{
+    var entry = Model;
+    var path = ViewContext.HttpContext.Request.Path;
+}
+
+<div class="col">
+    <div class="card h-100">
+        <div class="reipe-image" style="background-image: url('@(string.IsNullOrWhiteSpace(entry.Image) ? "/img/no-image.jpg" : entry.Image)')"></div>
+        <div class="card-body">
+            <h5 class="card-title text-capitalize">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <i 
+                        onclick="bookmark(this, @entry.Id)"
+                        class="bi @(entry.IsSaved ? "bi-bookmark-fill" : "bi-bookmark")"
+                        style="cursor:pointer"
+                        data-bs-toggle="tooltip"
+                        title="@(entry.IsSaved ? "Удалить из избранного." : "Добавить в избранное.")">
+                    </i>
+                }
+                <a href="@($"/RecipeDetail/Info/{entry.Id}")">@entry.Name</a>
+            </h5>
+            <input value="@entry.Rate.ToString(System.Globalization.CultureInfo.InvariantCulture)" type="number" class="recipe-rating" />
+            @if (!string.IsNullOrWhiteSpace(entry.Description))
+            {
+                <p class="card-text">@entry.Description</p>
+            }
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Голосов: @entry.Votes</li>
+            <li class="list-group-item text-capitalize">
+                @("Кухня: " )
+                <a 
+                    href="@($"{path}?{nameof(FilterViewModel.Form)}.{nameof(FilterViewModel.Form.CuisineTypeIds)}={entry.CuisineTypeId}")"
+                    class="card-link text-capitalize"
+                >
+                    @entry.CuisineType
+                </a>
+                
+            </li>
+            <li class="list-group-item text-capitalize">
+                @("Блюдо: ")
+                <a 
+                    href="@($"{path}?{nameof(FilterViewModel.Form)}.{nameof(FilterViewModel.Form.DishTypeIds)}={entry.DishTypeId}")"
+                    class="card-link text-capitalize"
+                >
+                    @entry.DishType
+                </a>
+            </li>
+        </ul>
+        @if (entry.OtherProperties?.Any() == true)
+        {
+            <div class="card-body">
+                @foreach (var prop in entry.OtherProperties)
+                {
+                    <a 
+                        href="@($"{path}?{nameof(FilterViewModel.Form)}.{nameof(FilterViewModel.Form.OtherPropertyIds)}={prop.Id}")"
+                        class="card-link text-capitalize"
+                    >
+                        @prop.Name
+                    </a>
+                }
+            </div>
+        }
+        <div class="card-footer">
+            <small class="text-muted">Обновлено @ViewHelper.TimeAgo(entry.DateModified)</small>
+        </div>
+    </div>
+</div>
+
+<script>
+    var isBookmarking = false;
+    function bookmark(element, recipeId) {
+        if (!isBookmarking) {
+            isBookmarking = true;
+            $.post("/Bookmark/" + recipeId)
+                .done(function() {
+                    if ($(element).hasClass('bi-bookmark-fill')) {
+                        $(element).removeClass('bi-bookmark-fill');
+                        $(element).addClass('bi-bookmark');
+                        $(element).attr('title', 'Добавить в избранное.');
+                    } else {
+                        $(element).removeClass('bi-bookmark');
+                        $(element).addClass('bi-bookmark-fill');
+                        $(element).attr('title', 'Удалить из избранного.');
+                    }
+                })
+                .always(function() {
+                    isBookmarking = false;
+                });
+        }
+    }
+</script>

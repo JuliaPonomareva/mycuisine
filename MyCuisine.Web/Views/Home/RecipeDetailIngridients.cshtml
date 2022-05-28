@@ -1,0 +1,53 @@
+﻿@model ViewModel<RecipeDetailIngridientsViewModel>
+@{
+    var recipeName = string.Concat(Model.Data.Name[0].ToString().ToUpper(), Model.Data.Name.AsSpan(1));
+    ViewData["Title"] = recipeName;
+    var main = Model.Data.Ingridients.Where(s => s.IsMain).OrderBy(s => s.OrderNumber).ToList();
+    var additional = Model.Data.Ingridients.Where(s => !s.IsMain).OrderBy(s => s.OrderNumber).ToList();
+}
+
+<h1 class="display-4 text-capitalize">@Model.Data.Name</h1>
+<partial name="_RecipeDetailNav" model="Model.Data.Id" />
+@if (main.Any())
+{
+    if (additional.Any())
+    {
+        <h2 class="display-6">Основные:</h2>
+    }
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var entry in main)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="reipe-image" style="background-image: url('@(string.IsNullOrWhiteSpace(entry.Image) ? "/img/no-image.jpg" : entry.Image)')"></div>
+                    <div class="card-body">
+                        <h5 class="card-title text-capitalize">@entry.Name</h5>
+                        <p class="card-text">@entry.Quantity.ToString(System.Globalization.CultureInfo.InvariantCulture) @entry.QuantityType</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (additional.Any())
+{
+    if (main.Any())
+    {
+        <h2 class="display-6">Дополнительные:</h2>
+    }
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var entry in additional)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="reipe-image" style="background-image: url('@(string.IsNullOrWhiteSpace(entry.Image) ? "/img/no-image.jpg" : entry.Image)')"></div>
+                    <div class="card-body">
+                        <h5 class="card-title text-capitalize">@entry.Name</h5>
+                        <p class="card-text">@entry.Quantity.ToString(System.Globalization.CultureInfo.InvariantCulture) @entry.QuantityType</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

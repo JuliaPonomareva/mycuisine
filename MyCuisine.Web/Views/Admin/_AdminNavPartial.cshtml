@@ -1,0 +1,34 @@
+﻿@{
+    Func<string,string> getActiveClass = (action) =>
+    {
+        if (ViewContext.HttpContext.Request.RouteValues["action"].ToString().StartsWith(action, StringComparison.OrdinalIgnoreCase))
+        {
+            return "active";
+        }
+        return "";
+    };
+}
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link @getActiveClass("Recip")" asp-area="" asp-controller="Admin" asp-action="Recipes">Рецепты</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @getActiveClass("Ingridient")" asp-controller="Admin" asp-action="Ingridients">Ингридиенты</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @getActiveClass("CuisineTyp")" asp-controller="Admin" asp-action="CuisineTypes">Типы кухни</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @getActiveClass("DishTyp")" asp-controller="Admin" asp-action="DishTypes">Типы блюда</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @getActiveClass("QuantityTyp")" asp-controller="Admin" asp-action="QuantityTypes">Единицы измерения</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @getActiveClass("OtherPropert")" asp-controller="Admin" asp-action="OtherProperties">Другие свойства</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @getActiveClass("User")" asp-controller="Admin" asp-action="Users">Пользователи</a>
+    </li>
+</ul>

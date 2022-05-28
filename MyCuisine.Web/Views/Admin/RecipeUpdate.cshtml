@@ -1,0 +1,95 @@
+﻿@model ViewModel<RecipeUpdateViewModel>
+@{
+    ViewData["Title"] = "Редактировать рецепт";
+}
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            $('#@nameof(Model.Data.Form.DishTypeId)').select2();
+            $('#@nameof(Model.Data.Form.CuisineTypeId)').select2();
+            $('#@nameof(Model.Data.Form.OtherPropertyIds)').select2();
+        });
+    </script>
+}
+<partial name="_AdminNavPartial" />
+<h1 class="display-4">@ViewData["Title"]</h1>
+<div class="my-2 float-right">
+    <a href="@($"/Admin/Recipes/{ViewContext.HttpContext.Request.RouteValues["id"]}/Items")" class="btn btn-primary">
+        Ингридиенты рецепта
+    </a>
+</div>
+<div class="my-2 float-right">
+    <a href="@($"/Admin/Recipes/{ViewContext.HttpContext.Request.RouteValues["id"]}/CookingSteps")" class="btn btn-primary">
+        Шаги приготовления рецепта
+    </a>
+</div>
+<form role="form" method="post" asp-antiforgery="true" enctype="multipart/form-data">
+    <div class="form-group mt-2">
+        <label asp-for="Data.Form.Name" class="control-label">Название:*</label>
+        <input asp-for="Data.Form.Name" class="form-control">
+        <span asp-validation-for="Data.Form.Name" class="text-danger text-break"></span>
+    </div>
+    <div class="form-group mt-2">
+        <label asp-for="Data.Form.Description" class="control-label">Описание:</label>
+        <textarea asp-for="Data.Form.Description" class="form-control"></textarea>
+        <span asp-validation-for="Data.Form.Description" class="text-danger text-break"></span>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.Data.Image))
+    {
+        <div class="mt-2">
+            <img src="@Model.Data.Image" width="100" />
+        </div>
+        <div class="form-check mt-2">
+          <input asp-for="Data.Form.RemoveImage" class="form-check-input" type="checkbox">
+          <label asp-for="Data.Form.RemoveImage" class="form-check-label">
+            Удалить существующую картинку
+          </label>
+        </div>
+        <div class="form-group">
+            <label asp-for="Data.Form.Image" class="control-label">Новая картинка:</label>
+            <input asp-for="Data.Form.Image" class="form-control">
+        </div>
+    }
+    else
+    {
+        <div class="form-group">
+            <label asp-for="Data.Form.Image" class="control-label">Картинка:</label>
+            <input asp-for="Data.Form.Image" class="form-control">
+        </div>
+    }
+    <div class="form-group mt-2">
+        <label asp-for="Data.Form.PersonsCount" class="control-label">Количество персон:</label>
+        <input asp-for="Data.Form.PersonsCount" class="form-control">
+        <span asp-validation-for="Data.Form.PersonsCount" class="text-danger text-break"></span>
+    </div>
+    <div class="form-group mt-2">
+        <label for="@nameof(Model.Data.Form.DishTypeId)" class="control-label">Тип блюда:*</label>
+        <select class="form-select" id="@nameof(Model.Data.Form.DishTypeId)" asp-for="Data.Form.DishTypeId" asp-items="Model.Data.DishTypes">
+        </select>
+        <span asp-validation-for="Data.Form.DishTypeId" class="text-danger text-break"></span>
+    </div>
+    <div class="form-group mt-2">
+        <label for="@nameof(Model.Data.Form.CuisineTypeId)" class="control-label">Тип кухни:*</label>
+        <select class="form-select" id="@nameof(Model.Data.Form.CuisineTypeId)" asp-for="Data.Form.CuisineTypeId" asp-items="Model.Data.CuisineTypes">
+        </select>
+        <span asp-validation-for="Data.Form.CuisineTypeId" class="text-danger text-break"></span>
+    </div>
+    <div class="form-group mt-2">
+        <label for="@nameof(Model.Data.Form.OtherPropertyIds)" class="control-label">Дополнительные свойства:</label>
+        <select class="form-select" id="@nameof(Model.Data.Form.OtherPropertyIds)" asp-for="Data.Form.OtherPropertyIds" asp-items="Model.Data.OtherProperties" multiple="multiple">
+        </select>
+        <span asp-validation-for="Data.Form.OtherPropertyIds" class="text-danger text-break"></span>
+    </div>
+    <div class="form-check mt-2">
+      <input asp-for="Data.Form.IsActive" class="form-check-input" type="checkbox">
+      <label asp-for="Data.Form.IsActive" class="form-check-label">
+        Статус
+      </label>
+    </div>
+    <div class="text-center">
+        <a href="/Admin/Recipes" class="btn btn-light btn-md">Назад</a>
+        <button type="submit" class="btn btn-primary btn-md">Сохранить</button>
+    </div>
+</form>

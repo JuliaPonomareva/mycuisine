@@ -1,0 +1,45 @@
+﻿@model FilterViewModel
+@{
+    var path = ViewContext.HttpContext.Request.Path;
+}
+
+<div class="card mb-2">
+    <div class="card-body">
+        <form action="@path" method="get">
+            <div class="form-group mt-2">
+                <label for="@nameof(Model.Form.SortBy)" class="control-label">Сортировать по:</label>
+                <select class="form-select" id="@nameof(Model.Form.SortBy)" asp-for="Form.SortBy" asp-items="Model.SortOptions">
+                </select>
+            </div>
+            <div class="form-group mt-2">
+                <label for="@nameof(Model.Form.DishTypeIds)" class="control-label">Поиск по типу блюда:</label>
+                <select class="form-select" id="@nameof(Model.Form.DishTypeIds)" asp-for="Form.DishTypeIds" asp-items="Model.DishTypes" multiple="multiple">
+                </select>
+            </div>
+            <div class="form-group mt-2">
+                <label for="@nameof(Model.Form.CuisineTypeIds)" class="control-label">Поиск по типу кухни:</label>
+                <select class="form-select" id="@nameof(Model.Form.CuisineTypeIds)" asp-for="Form.CuisineTypeIds" asp-items="Model.CuisineTypes" multiple="multiple">
+                </select>
+            </div>
+            <div class="form-group mt-2">
+                <label for="@nameof(Model.Form.OtherPropertyIds)" class="control-label">Поиск по свойствам:</label>
+                <select class="form-select" id="@nameof(Model.Form.OtherPropertyIds)" asp-for="Form.OtherPropertyIds" asp-items="Model.OtherProperties" multiple="multiple">
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-md mt-2">Применить</button>
+        </form>
+        <form action="@path" method="get">
+            <button type="submit" class="btn btn-light btn-md mt-2">Сбросить</button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    function filterInit() {
+        $('#@nameof(Model.Form.SortBy)').select2();
+        $('#@nameof(Model.Form.DishTypeIds)').select2();
+        $('#@nameof(Model.Form.CuisineTypeIds)').select2();
+        $('#@nameof(Model.Form.OtherPropertyIds)').select2();
+    }
+</script>

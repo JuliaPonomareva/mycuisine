@@ -1,0 +1,80 @@
+﻿@model TableViewModel
+
+@if (Model.CreateUrl != null)
+{
+    <div class="my-2 float-right">
+        <a href="@Model.CreateUrl()" class="btn btn-primary">Создать</a>
+    </div> 
+}
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                @foreach (var column in Model.Columns)
+                {
+                    var name = column.ColumnName;
+                    if (column.IsEdit || column.IsRemove)
+                    {
+                        name = "";
+                    }
+                    <th>@name</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                var idColumn = Model.Columns.FirstOrDefault(s => s.IsIdentifier);
+                var idValue = idColumn?.Value(item, idColumn?.ModelField);
+                <tr>
+                    @foreach (var column in Model.Columns)
+                    {
+                        if (!column.IsEdit && !column.IsRemove)
+                        {
+                            var value = column.Value(item, column.ModelField);
+                            if ($"{value}" == "True")
+                            {
+                                <td>@ViewHelper.GetBooleanElement(true)</td>
+                            }
+                            else if ($"{value}" == "False")
+                            {
+                                <td>@ViewHelper.GetBooleanElement(false)</td>
+                            }
+                            else if (column.IsImage)
+                            {
+                                <td><img src="@value" width="50" /></td>
+                            }
+                            else if (column.Url != null)
+                            {
+                                <td><a href="@column.Url(idValue)">@value</a></td>
+                            }
+                            else
+                            {
+                                <td>@value</td>
+                            }
+                        }
+                        else
+                        {
+                            if (idColumn != null)
+                            {
+                                if (column.IsEdit)
+                                {
+                                    <td><a class="btn btn-link" href="@Model.UpdateUrl(idValue)">Редактировать</a></td>
+                                }
+                                else if (column.IsRemove)
+                                {
+                                    <td>
+                                        <form action="@Model.DeleteUrl(idValue)" role="form" method="post" asp-antiforgery="true">
+                                            <button type="submit" class="btn btn-link">Удалить</button>
+                                        </form>
+                                    </td>
+                                }
+                            }
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,37 @@
+﻿@model ViewModel<RecipeDetailRatesAddViewModel>
+@{
+    var recipeName = string.Concat(Model.Data.Name[0].ToString().ToUpper(), Model.Data.Name.AsSpan(1));
+    ViewData["Title"] = recipeName;
+}
+<link rel="stylesheet" href="~/lib/star-rating/star-rating.min.css" />
+<link rel="stylesheet" href="~/lib/star-rating/theme.min.css" />
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/star-rating/star-rating.min.js"></script>
+    <script src="~/lib/star-rating/theme.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.recipe-rating').rating({showCaption:false, min:0, max:5, step:0.1});
+        });
+    </script>
+}
+
+<h1 class="display-4 text-capitalize">@Model.Data.Name</h1>
+<partial name="_RecipeDetailNav" model="Model.Data.Id" />
+
+<form role="form" method="post" asp-antiforgery="true">
+    <div class="form-group mt-2">
+        <label asp-for="Data.Form.Rate" class="control-label">Рейтинг:</label>
+        <input asp-for="Data.Form.Rate" class="recipe-rating" />
+    </div>
+    <div class="form-group mt-2">
+        <label asp-for="Data.Form.Comment" class="control-label">Комментарий:</label>
+        <textarea asp-for="Data.Form.Comment" class="form-control"></textarea>
+        <span asp-validation-for="Data.Form.Comment" class="text-danger text-break"></span>
+    </div>
+    
+    <div class="text-center mt-2">
+        <a href="@($"/RecipeDetail/Rates/{Model.Data.Id}")" class="btn btn-light btn-md">Назад</a>
+        <button type="submit" class="btn btn-primary btn-md">Сохранить</button>
+    </div>
+</form>

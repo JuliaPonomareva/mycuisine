@@ -1,0 +1,52 @@
+﻿@model ViewModel<RecipeItemUpdateViewModel>
+@{
+    ViewData["Title"] = "Редактировать ингридиент рецепта";
+}
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            $('#@nameof(Model.Data.Form.IngridientId)').select2();
+            $('#@nameof(Model.Data.Form.QuantityTypeId)').select2();
+        });
+    </script>
+}
+<partial name="_AdminNavPartial" />
+<h1 class="display-4">@ViewData["Title"]</h1>
+
+<form role="form" method="post" asp-antiforgery="true">
+    <div class="form-group mt-2">
+        <label for="@nameof(Model.Data.Form.IngridientId)" class="control-label">Ингридиент:*</label>
+        <select class="form-select" id="@nameof(Model.Data.Form.IngridientId)" asp-for="Data.Form.IngridientId" asp-items="Model.Data.Ingridients">
+        </select>
+        <span asp-validation-for="Data.Form.IngridientId" class="text-danger text-break"></span>
+    </div>
+    <div class="form-group mt-2">
+        <label for="@nameof(Model.Data.Form.QuantityTypeId)" class="control-label">Единицы измерения:*</label>
+        <select class="form-select" id="@nameof(Model.Data.Form.QuantityTypeId)" asp-for="Data.Form.QuantityTypeId" asp-items="Model.Data.QuantityTypes">
+        </select>
+        <span asp-validation-for="Data.Form.QuantityTypeId" class="text-danger text-break"></span>
+    </div>
+    <div class="form-group mt-2">
+        <label asp-for="Data.Form.Quantity" class="control-label">Количество:</label>
+        <input asp-for="Data.Form.Quantity" class="form-control">
+        <span asp-validation-for="Data.Form.Quantity" class="text-danger text-break"></span>
+    </div>
+    <div class="form-group mt-2">
+        <label asp-for="Data.Form.OrderNumber" class="control-label">Порядковый номер:</label>
+        <input asp-for="Data.Form.OrderNumber" class="form-control">
+        <span asp-validation-for="Data.Form.OrderNumber" class="text-danger text-break"></span>
+    </div>
+    <div class="form-check mt-2">
+      <input asp-for="Data.Form.IsMain" class="form-check-input" type="checkbox">
+      <label asp-for="Data.Form.IsMain" class="form-check-label">
+        Основной
+      </label>
+    </div>
+    
+    <div class="text-center">
+        <a href="@($"/Admin/Recipes/{Model.Data.RecipeId}/Items")" class="btn btn-light btn-md">Назад</a>
+        <button type="submit" class="btn btn-primary btn-md">Создать</button>
+    </div>
+</form>

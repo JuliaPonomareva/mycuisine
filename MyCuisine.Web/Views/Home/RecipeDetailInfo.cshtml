@@ -1,0 +1,41 @@
+﻿@model ViewModel<RecipeDetailInfoViewModel>
+@{
+    var recipeName = string.Concat(Model.Data.Name[0].ToString().ToUpper(), Model.Data.Name.AsSpan(1));
+    ViewData["Title"] = recipeName;
+}
+
+<link rel="stylesheet" href="~/lib/star-rating/star-rating.min.css" />
+<link rel="stylesheet" href="~/lib/star-rating/theme.min.css" />
+@section Scripts{
+    <script src="~/lib/star-rating/star-rating.min.js"></script>
+    <script src="~/lib/star-rating/theme.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.recipe-rating').rating({displayOnly:true, showCaption:false});
+        });
+    </script>
+}
+
+<h1 class="display-4 text-capitalize">@Model.Data.Name</h1>
+<partial name="_RecipeDetailNav" model="Model.Data.Id" />
+
+<div class="card mb-3 mt-2">
+  <div class="row g-0">
+    <div class="col-md-4">
+      <img src="@(string.IsNullOrWhiteSpace(Model.Data.Image) ? "/img/no-image.jpg" : Model.Data.Image)" class="img-fluid rounded-start">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title text-capitalize">@Model.Data.Name</h5>
+        <input value="@Model.Data.Rate.ToString(System.Globalization.CultureInfo.InvariantCulture)" type="number" class="recipe-rating" />
+        <p class="card-text">@Model.Data.Description</p>
+        <ul class="list-group">
+          <li class="list-group-item">Голосов: @Model.Data.Votes</li>
+          <li class="list-group-item text-capitalize">Кухня: @Model.Data.CuisineType</li>
+          <li class="list-group-item text-capitalize">Блюдо: @Model.Data.DishType</li>
+          <li class="list-group-item text-capitalize">Свойства: @string.Join(", ", Model.Data.OtherProperties)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,129 @@
+﻿@using Newtonsoft.Json
+@model Paging
+@if (Model != null && Model.Pages > 1)
+{
+    var currentOffset = Model.Offset;
+    var limit = Model.Limit;
+    var currentPage = Model.CurrentPage;
+
+    var firstDisableStyle = currentPage == 1 ? "opacity: 0.5;" : "cursor: pointer;";
+    var firstStyles = $"{firstDisableStyle}";
+
+    var previousDisableStyle = currentPage == 1 ? "opacity: 0.5;" : "cursor: pointer;";
+    var previousStyles = $"{previousDisableStyle}";
+
+    var nextDisableStyle = currentPage == Model.Pages ? "opacity: 0.5;" : "cursor: pointer;";
+    var nextStyles = $"{nextDisableStyle}";
+
+    var urls = new List<PagingUrls>();
+
+    foreach (var pg in Enumerable.Range(1, Model.Pages))
+    {
+        urls.Add(new PagingUrls
+        {
+            Number = pg,
+            Url = Model.GetUrl(Model.CaclOffset(pg, limit), limit)
+        });
+    }
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <span class="page-link" tabindex="-1" style="@firstStyles" onclick="goToFirst()">First</span>
+            </li>
+            <li class="page-item">
+                <span class="page-link" tabindex="-1" style="@previousStyles" onclick="goToPrevious()">Previous</span>
+            </li>
+
+            <li class="page-item">
+                <span class="page-link" tabindex="-1">
+                    <span>Page: </span>
+                    <input id="pageNumberInput" type="number" data-lpignore="true" value="@currentPage" onchange="changeNumber(this.value)" max="@Model.Pages" min="1" />
+                    <span> of </span>
+                    <span>@Model.Pages</span>
+                </span>
+                
+            </li>
+            
+            <li class="page-item">
+                <span class="page-link" style="@nextStyles" onclick="goToNext()">Next</span>
+            </li>
+            <li class="page-item">
+                <span class="page-link" style="@nextStyles" onclick="goToLast()">Last</span>
+            </li>
+        </ul>
+    </nav>
+
+    <script>
+        var redirectUrls = @Html.Raw(JsonConvert.SerializeObject(urls));
+        var currentPage = @currentPage;
+        var lastPage = @Model.Pages;
+
+        function changeNumber(value) {
+            var max = parseInt($('#pageNumberInput').attr('max'));
+            var min = parseInt($('#pageNumberInput').attr('min'));
+            if ($('#pageNumberInput').val() > max) {
+                $('#pageNumberInput').val(max);
+                value = max;
+            }
+            else if ($('#pageNumberInput').val() < min) {
+                $('#pageNumberInput').val(min);
+                value = min;
+            }
+
+            let redirectUrl;
+
+            redirectUrls.forEach(e => {
+                if (e.Number == value) {
+                    redirectUrl = e.Url;
+                }
+            });
+
+            window.location.href = redirectUrl;
+        }
+
+        function goToFirst() {
+            if (currentPage !== 1) {
+                let redirectUrl = redirectUrls[0].Url;
+
+                window.location.href = redirectUrl;
+            }
+        }
+
+        function goToLast() {
+            if (currentPage !== lastPage) {
+                let redirectUrl = redirectUrls[redirectUrls.length - 1].Url;
+
+                window.location.href = redirectUrl;
+            }
+        }
+
+        function goToPrevious() {
+            if (currentPage !== 1) {
+                let redirectUrl;
+
+                redirectUrls.forEach(e => {
+                    if (e.Number == currentPage - 1) {
+                        redirectUrl = e.Url;
+                    }
+                });
+
+                window.location.href = redirectUrl;
+            }
+        }
+
+        function goToNext() {
+            if (currentPage !== lastPage) {
+                let redirectUrl;
+
+                redirectUrls.forEach(e => {
+                    if (e.Number == currentPage + 1) {
+                        redirectUrl = e.Url;
+                    }
+                });
+
+                window.location.href = redirectUrl;
+            }
+        }
+    </script>
+}

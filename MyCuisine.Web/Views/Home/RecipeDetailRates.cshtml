@@ -1,0 +1,66 @@
+﻿@model ViewModel<RecipeDetailRatesViewModel>
+@{
+    var recipeName = string.Concat(Model.Data.Name[0].ToString().ToUpper(), Model.Data.Name.AsSpan(1));
+    ViewData["Title"] = recipeName;
+}
+
+<link rel="stylesheet" href="~/lib/star-rating/star-rating.min.css" />
+<link rel="stylesheet" href="~/lib/star-rating/theme.min.css" />
+@section Scripts{
+    <script src="~/lib/star-rating/star-rating.min.js"></script>
+    <script src="~/lib/star-rating/theme.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.recipe-rating').rating({displayOnly:true, showCaption:false});
+        });
+    </script>
+}
+
+<h1 class="display-4 text-capitalize">@Model.Data.Name</h1>
+<partial name="_RecipeDetailNav" model="Model.Data.Id" />
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="my-2 float-right">
+        <a href="@($"/RecipeDetail/RatesAdd/{Model.Data.Id}")" class="btn btn-primary">Ваш отзыв</a>
+    </div>
+}
+
+<partial name="_Paging" model="Model.Paging" />
+
+<ul class="list-group list-group-flush">
+    @foreach (var entry in Model.Data.Rates)
+    {
+        <li class="list-group-item">
+            <input value="@entry.Rate" type="number" class="recipe-rating" />
+            <p class="fw-bold">
+                <i class="bi bi-person-fill"></i>
+                @(!string.IsNullOrWhiteSpace(entry.User) ? entry.User : "Unknown user")
+            </p>
+            @if (!string.IsNullOrWhiteSpace(entry.Comment))
+            {
+                <p>
+                <i class="bi bi-card-text"></i>
+                    @entry.Comment
+                </p>
+            }
+            @if (entry.DateCreated == entry.DateModified)
+            {
+                <small class="text-muted">
+                    <i class="bi bi-clock"></i>
+                    Создано @ViewHelper.TimeAgo(entry.DateCreated)
+                </small>
+            }
+            else
+            {
+                <small class="text-muted">
+                    <i class="bi bi-clock"></i>
+                    Обновлено @ViewHelper.TimeAgo(entry.DateModified)
+                </small>
+            }
+            <p>
+        </li>
+    }
+</ul>
+
+<partial name="_Paging" model="Model.Paging" />

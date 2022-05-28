@@ -1,0 +1,43 @@
+﻿@model ViewModel<SummaryRecipesViewModel>
+@{
+    ViewData["Title"] = "Избранное";
+}
+
+<link rel="stylesheet" href="~/lib/star-rating/star-rating.min.css" />
+<link rel="stylesheet" href="~/lib/star-rating/theme.min.css" />
+@section Scripts{
+    <script src="~/lib/star-rating/star-rating.min.js"></script>
+    <script src="~/lib/star-rating/theme.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.recipe-rating').rating({displayOnly:true, showCaption:false});
+            filterInit();
+            if (@(Model.Data.Filter.Form == null ? "true" : "false")) {
+                $('#collapseFilter').hide();
+                $('#collapseFilter').collapse('hide');
+                $('#collapseFilter').show();
+            }
+        });
+    </script>
+}
+<h1 class="display-4">@ViewData["Title"]</h1>
+
+<p>
+  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+    Параметры сортировки и фильтрации
+  </button>
+</p>
+<div class="collapse show" id="collapseFilter">
+  <partial name="_Filter" model="Model.Data.Filter" />
+</div>
+
+<partial name="_Paging" model="Model.Paging" />
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var entry in Model.Data.Entries)
+    {
+        <partial name="_SummaryRecipePartial" model="entry" />
+    }
+</div>
+
+<partial name="_Paging" model="Model.Paging" />

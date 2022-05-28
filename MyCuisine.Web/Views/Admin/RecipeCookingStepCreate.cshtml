@@ -1,0 +1,37 @@
+﻿@model ViewModel<CookingStepCreateViewModel>
+@{
+    ViewData["Title"] = "Создать шаг приготовления рецепта";
+}
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
+<partial name="_AdminNavPartial" />
+<h1 class="display-4">@ViewData["Title"]</h1>
+
+<form role="form" method="post" asp-antiforgery="true" enctype="multipart/form-data">
+    <div class="form-group mt-2">
+        <label asp-for="Data.Form.Name" class="control-label">Название:*</label>
+        <input asp-for="Data.Form.Name" class="form-control">
+        <span asp-validation-for="Data.Form.Name" class="text-danger text-break"></span>
+    </div>
+    <div class="form-group mt-2">
+        <label asp-for="Data.Form.Description" class="control-label">Описание:</label>
+        <textarea asp-for="Data.Form.Description" class="form-control"></textarea>
+        <span asp-validation-for="Data.Form.Description" class="text-danger text-break"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Data.Form.Image" class="control-label">Картинка:</label>
+        <input asp-for="Data.Form.Image" class="form-control">
+    </div>
+    <div class="form-group mt-2">
+        <label asp-for="Data.Form.OrderNumber" class="control-label">Порядковый номер:</label>
+        <input asp-for="Data.Form.OrderNumber" class="form-control">
+        <span asp-validation-for="Data.Form.OrderNumber" class="text-danger text-break"></span>
+    </div>
+    
+    <div class="text-center mt-2">
+        <a href="@($"/Admin/Recipes/{Model.Data.RecipeId}/CookingSteps")" class="btn btn-light btn-md">Назад</a>
+        <button type="submit" class="btn btn-primary btn-md">Создать</button>
+    </div>
+</form>

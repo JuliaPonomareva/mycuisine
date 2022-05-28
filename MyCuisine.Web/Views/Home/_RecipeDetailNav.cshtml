@@ -1,0 +1,34 @@
+﻿@model int
+@{
+    Func<string,string> getActiveClass = (action) =>
+    {
+        if (ViewContext.HttpContext.Request.RouteValues["action"].ToString().StartsWith(action, StringComparison.OrdinalIgnoreCase))
+        {
+            return "active";
+        }
+        return "";
+    };
+}
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link @getActiveClass("RecipeDetailInfo")" asp-area="" asp-controller="Home" asp-action="RecipeDetailInfo" asp-route-recipeId="@Model">
+            Информация
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @getActiveClass("RecipeDetailIngridients")" asp-area="" asp-controller="Home" asp-action="RecipeDetailIngridients" asp-route-recipeId="@Model">
+            Ингридиенты
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @getActiveClass("RecipeDetailCookingSteps")" asp-area="" asp-controller="Home" asp-action="RecipeDetailCookingSteps" asp-route-recipeId="@Model">
+            Шаги приготовления
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @getActiveClass("RecipeDetailRates")" asp-area="" asp-controller="Home" asp-action="RecipeDetailRates" asp-route-recipeId="@Model">
+            Отзывы
+        </a>
+    </li>
+</ul>

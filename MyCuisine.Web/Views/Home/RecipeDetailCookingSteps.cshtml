@@ -1,0 +1,24 @@
+﻿@model ViewModel<RecipeDetailCookingStepsViewModel>
+@{
+    var recipeName = string.Concat(Model.Data.Name[0].ToString().ToUpper(), Model.Data.Name.AsSpan(1));
+    ViewData["Title"] = recipeName;
+}
+
+<h1 class="display-4 text-capitalize">@Model.Data.Name</h1>
+<partial name="_RecipeDetailNav" model="Model.Data.Id" />
+@foreach (var entry in Model.Data.CookingSteps.OrderBy(s => s.OrderNumber))
+{
+    <div class="card mb-3 mt-2">
+      <div class="row g-0">
+        <div class="col-md-4">
+          <img src="@(string.IsNullOrWhiteSpace(entry.Image) ? "/img/no-image.jpg" : entry.Image)" class="img-fluid rounded-start">
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title text-capitalize">@entry.Name</h5>
+            <p class="card-text">@entry.Description</p>
+          </div>
+        </div>
+      </div>
+    </div>
+}

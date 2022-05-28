@@ -1,0 +1,38 @@
+﻿@model ViewModel<UserUpdateViewModel>
+@{
+    ViewData["Title"] = "Редактирование пользователя";
+}
+
+<partial name="_AdminNavPartial" />
+<h1 class="display-4">@ViewData["Title"]</h1>
+
+<div class="d-grid gap-3">
+    <div class="p-2 bg-light border">
+        Почта: @Model.Data.Email
+    </div>
+    <div class="p-2 bg-light border">
+        Имя: @Model.Data.Name
+    </div>
+    <div class="p-2 bg-light border">
+        Администратор: @ViewHelper.GetBooleanElement(Model.Data.IsAdmin)
+    </div>
+    <div class="p-2 bg-light border">
+        Дата создания: @Model.Data.DateCreated.ToString("d")
+    </div>
+    <div class="p-2 bg-light border">
+        Дата обновления: @Model.Data.DateModified.ToString("d")
+    </div>
+    <div class="p-2 bg-light border">
+        Статус: @ViewHelper.GetBooleanElement(Model.Data.IsActive)
+        <form asp-controller="Admin" asp-action="UserUpdate" role="form" method="post" asp-antiforgery="true">
+            <input type="hidden" asp-for="Data.Form.Id">
+            <button type="submit" class="btn btn-primary btn-md" @(Model.Data.IsAdmin ? "disabled" : "")>
+                @(Model.Data.IsActive ? "Заблокировать" : "Разблокировать")
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="text-center mt-3">
+    <a href="/Admin/Users" class="btn btn-light btn-md">Назад</a>
+</div>

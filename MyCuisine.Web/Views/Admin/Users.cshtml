@@ -1,0 +1,10 @@
+﻿@model ViewModel<UsersViewModel>
+@{
+    ViewData["Title"] = "Пользователи";
+}
+
+<partial name="_AdminNavPartial" />
+<h1 class="display-4">@ViewData["Title"]</h1>
+<partial name="_AdminFilter" model="@(new AdminFilterViewModel { Placeholder = "Поиск по почте..." })" />
+<partial name="_Table" model="Model.Data.GetTableViewModel(ViewData)" />
+<partial name="_Paging" model="Model.Paging" />

@@ -1,0 +1,28 @@
+﻿@model ViewModel<DishTypeCreateViewModel>
+@{
+    ViewData["Title"] = "Создать тип блюда";
+}
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
+<partial name="_AdminNavPartial" />
+<h1 class="display-4">@ViewData["Title"]</h1>
+
+<form role="form" method="post" asp-antiforgery="true">
+    <div class="form-group">
+        <label asp-for="Data.Form.Name" class="control-label">Название:*</label>
+        <input asp-for="Data.Form.Name" class="form-control">
+        <span asp-validation-for="Data.Form.Name" class="text-danger text-break"></span>
+    </div>
+    <div class="form-check mt-2">
+      <input asp-for="Data.Form.IsActive" class="form-check-input" type="checkbox">
+      <label asp-for="Data.Form.IsActive" class="form-check-label">
+        Статус
+      </label>
+    </div>
+    <div class="text-center">
+        <a href="/Admin/DishTypes" class="btn btn-light btn-md">Назад</a>
+        <button type="submit" class="btn btn-primary btn-md">Создать</button>
+    </div>
+</form>
